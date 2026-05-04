@@ -224,6 +224,7 @@ describe("registry types", () => {
         license: "Apache-2.0",
         minCliVersion: "0.4.0",
         deprecated: "Use `shader-wipe-v2` instead.",
+        stability: "experimental",
         files: [
           {
             path: "shader-wipe.html",
@@ -235,6 +236,7 @@ describe("registry types", () => {
       expect(item.author).toBe("heygen");
       expect(item.authorUrl).toBe("https://example.com/heygen");
       expect(item.sourcePrompt).toBe("Create a shader wipe.");
+      expect(item.stability).toBe("experimental");
     });
   });
 });

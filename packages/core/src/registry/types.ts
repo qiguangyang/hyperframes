@@ -34,6 +34,8 @@ export interface RegistryItemPreview {
   poster?: string;
 }
 
+export type RegistryItemStability = "stable" | "experimental";
+
 /** Fields common to every registry item, regardless of type. */
 interface RegistryItemBase {
   /** JSON Schema URL — `https://hyperframes.heygen.com/schema/registry-item.json`. */
@@ -58,6 +60,8 @@ interface RegistryItemBase {
   minCliVersion?: string;
   /** If set, the item is deprecated; the value is the reason or migration note. */
   deprecated?: string;
+  /** Stability label shown in catalog surfaces. Omitted means stable. */
+  stability?: RegistryItemStability;
   /** Names of other registry items this item depends on. */
   registryDependencies?: string[];
   /** Files to install. Must be non-empty. */

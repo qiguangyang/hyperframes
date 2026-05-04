@@ -44,6 +44,7 @@ interface CatalogEntry {
   title: string;
   description: string;
   tags: string[];
+  stability?: "stable" | "experimental";
   /** Relative href within the docs site. */
   href: string;
   /** Preview poster image path (relative to docs root). */
@@ -122,6 +123,25 @@ function generateItemMdx(kind: ItemKind, manifest: RegistryItem): string {
   if (manifest.author) {
     const author = source.authorUrl ? `[${manifest.author}](${source.authorUrl})` : manifest.author;
     lines.push(`Created by ${author}.`, "");
+  }
+
+  if (manifest.stability === "experimental") {
+    lines.push(
+      "<Warning>",
+      "This catalog item is experimental. Its native path uses Chrome's HTML-in-canvas API, which is unstable and can change or be removed. Stable Chrome keeps the fallback path. For native rendering, enable `chrome://flags/#canvas-draw-element`, restart the browser after changing the flag, or launch Chromium with `--enable-features=CanvasDrawElement`.",
+      "</Warning>",
+      "",
+      "## Agent Setup",
+      "",
+      "When adapting this item for a user, edit the feature flag yourself when browser access is available, then tell the user to restart the browser before previewing again. If launching Chromium from automation or render scripts, include:",
+      "",
+      "```bash",
+      "--enable-features=CanvasDrawElement",
+      "```",
+      "",
+      "Do not assume native capture is available. Keep the fallback path intact and verify `drawElementImage` support in the target browser.",
+      "",
+    );
   }
 
   if (source.sourcePrompt) {
@@ -248,6 +268,7 @@ function main(): void {
       title: manifest.title,
       description: manifest.description,
       tags: manifest.tags ?? [],
+      stability: manifest.stability,
       href: `/catalog/${dir}/${manifest.name}`,
       preview: `${catalogImageBase}/${dir}/${manifest.name}.png`,
     });
@@ -277,10 +298,11 @@ function main(): void {
     "Social Overlays": 0,
     "Shader Transitions": 1,
     "CSS Transitions": 2,
-    Showcases: 3,
-    Data: 4,
-    Effects: 5,
-    Blocks: 6,
+    Experimental: 3,
+    Showcases: 4,
+    Data: 5,
+    Effects: 6,
+    Blocks: 7,
   };
 
   function groupForItem(entry: CatalogEntry): string {
@@ -289,6 +311,7 @@ function main(): void {
     if (tags.includes("transition") && tags.includes("shader")) return "Shader Transitions";
     if (tags.includes("transition") && tags.includes("showcase")) return "CSS Transitions";
     // Single-tag mapping
+    if (entry.stability === "experimental" || tags.includes("experimental")) return "Experimental";
     if (tags.includes("social")) return "Social Overlays";
     if (tags.includes("transition"))
       return entry.type === "component" ? "Effects" : "CSS Transitions";

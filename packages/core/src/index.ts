@@ -173,6 +173,7 @@ export type {
   FileTarget,
   RegistryItemDimensions,
   RegistryItemPreview,
+  RegistryItemStability,
   RegistryItem,
   ExampleItem,
   BlockItem,

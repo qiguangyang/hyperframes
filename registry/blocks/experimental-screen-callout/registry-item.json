@@ -1,0 +1,21 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "experimental-screen-callout",
+  "type": "hyperframes:block",
+  "title": "Experimental Screen Callout",
+  "description": "Creator workflow block for product tutorials: edit one DOM screen, then add native canvas zoom lenses, spotlights, cursor trails, and annotations",
+  "tags": ["experimental", "tutorial", "screen", "callout", "canvas"],
+  "stability": "experimental",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 12,
+  "files": [
+    {
+      "path": "experimental-screen-callout.html",
+      "target": "compositions/experimental-screen-callout.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

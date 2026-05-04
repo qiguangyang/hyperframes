@@ -33,12 +33,14 @@
     "title": "Canvas DOM Refractor",
     "description": "Native HTML-in-canvas showcase that refracts, magnifies, slices, and curves one editable DOM source as pixels",
     "tags": [
+      "experimental",
       "showcase",
       "canvas",
       "html",
       "refractor",
       "native"
     ],
+    "stability": "experimental",
     "href": "/catalog/blocks/canvas-dom-refractor",
     "preview": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/canvas-dom-refractor.png"
   },
@@ -102,6 +104,22 @@
     ],
     "href": "/catalog/blocks/domain-warp-dissolve",
     "preview": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/domain-warp-dissolve.png"
+  },
+  {
+    "name": "experimental-screen-callout",
+    "type": "block",
+    "title": "Experimental Screen Callout",
+    "description": "Creator workflow block for product tutorials: edit one DOM screen, then add native canvas zoom lenses, spotlights, cursor trails, and annotations",
+    "tags": [
+      "experimental",
+      "tutorial",
+      "screen",
+      "callout",
+      "canvas"
+    ],
+    "stability": "experimental",
+    "href": "/catalog/blocks/experimental-screen-callout",
+    "preview": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/experimental-screen-callout.png"
   },
   {
     "name": "flash-through-white",

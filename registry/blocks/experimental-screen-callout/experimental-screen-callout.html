@@ -1,0 +1,1129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>experimental-screen-callout</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #050706;
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+      }
+
+      #experimental-screen-callout {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        color: #ecfff8;
+        background:
+          radial-gradient(circle at 20% 10%, rgba(73, 255, 203, 0.2), transparent 28%),
+          radial-gradient(circle at 90% 80%, rgba(255, 198, 64, 0.16), transparent 24%),
+          linear-gradient(135deg, #07110f 0%, #050706 54%, #0d0b06 100%);
+      }
+
+      #experimental-screen-callout::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+        background-size: 54px 54px;
+        mask-image: linear-gradient(to bottom, transparent, black 18%, black 84%, transparent);
+        opacity: 0.35;
+      }
+
+      .label-pill {
+        display: inline-flex;
+        width: max-content;
+        align-items: center;
+        gap: 10px;
+        border: 1px solid rgba(104, 255, 218, 0.5);
+        border-radius: 999px;
+        padding: 11px 18px;
+        color: #67ffd6;
+        font-size: 21px;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        background: rgba(4, 14, 12, 0.62);
+      }
+
+      .label-pill::before {
+        content: "";
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #67ffd6;
+        box-shadow: 0 0 18px #67ffd6;
+      }
+
+      .hero-copy {
+        position: absolute;
+        left: 78px;
+        top: 76px;
+        z-index: 4;
+        width: 530px;
+      }
+
+      .hero-copy h1 {
+        margin: 28px 0 20px;
+        font-size: 89px;
+        line-height: 0.95;
+        letter-spacing: 0;
+      }
+
+      .hero-copy p {
+        margin: 0;
+        width: 430px;
+        color: rgba(236, 255, 248, 0.76);
+        font-size: 29px;
+        font-weight: 800;
+        line-height: 1.18;
+      }
+
+      .stats-row {
+        position: absolute;
+        left: 78px;
+        bottom: 76px;
+        z-index: 4;
+        display: flex;
+        gap: 12px;
+      }
+
+      .stat-card {
+        width: 155px;
+        border: 1px solid rgba(236, 255, 248, 0.2);
+        background: rgba(236, 255, 248, 0.06);
+        padding: 18px 17px;
+      }
+
+      .stat-value {
+        font-size: 31px;
+        font-weight: 950;
+        line-height: 1;
+      }
+
+      .stat-label {
+        margin-top: 10px;
+        color: rgba(236, 255, 248, 0.55);
+        font-size: 13px;
+        font-weight: 950;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .source-note {
+        position: absolute;
+        left: 638px;
+        top: 98px;
+        z-index: 2;
+        width: 364px;
+        transform: rotate(-5deg);
+        border: 1px solid rgba(104, 255, 218, 0.25);
+        border-radius: 18px;
+        padding: 21px 24px 24px;
+        background: rgba(5, 12, 10, 0.6);
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+      }
+
+      .source-note strong {
+        display: block;
+        margin-bottom: 8px;
+        color: #67ffd6;
+        font-size: 15px;
+        font-weight: 950;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .source-note span {
+        color: rgba(236, 255, 248, 0.74);
+        font-size: 19px;
+        font-weight: 850;
+        line-height: 1.25;
+      }
+
+      .stage {
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+      }
+
+      .native-stage {
+        display: none;
+      }
+
+      [data-native-canvas="true"] .native-stage {
+        display: block;
+      }
+
+      [data-native-canvas="true"] .fallback-stage {
+        display: none;
+      }
+
+      .browser-shell {
+        position: absolute;
+        left: 690px;
+        top: 214px;
+        width: 1072px;
+        height: 674px;
+        border: 1px solid rgba(236, 255, 248, 0.25);
+        border-radius: 26px;
+        background: #1d2524;
+        box-shadow:
+          0 48px 120px rgba(0, 0, 0, 0.5),
+          0 0 70px rgba(61, 255, 212, 0.08);
+        transform: rotate(-2.8deg);
+      }
+
+      .browser-bar {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: 64px;
+        border-radius: 26px 26px 0 0;
+        background: #2c3635;
+      }
+
+      .browser-dots {
+        position: absolute;
+        left: 26px;
+        top: 24px;
+        display: flex;
+        gap: 10px;
+      }
+
+      .browser-dots span {
+        width: 13px;
+        height: 13px;
+        border-radius: 50%;
+      }
+
+      .browser-dots span:nth-child(1) {
+        background: #ff5f57;
+      }
+
+      .browser-dots span:nth-child(2) {
+        background: #ffbd2e;
+      }
+
+      .browser-dots span:nth-child(3) {
+        background: #28c840;
+      }
+
+      .url-bar {
+        position: absolute;
+        left: 110px;
+        right: 30px;
+        top: 17px;
+        height: 30px;
+        border-radius: 16px;
+        padding-left: 22px;
+        color: rgba(236, 255, 248, 0.5);
+        font-size: 14px;
+        font-weight: 900;
+        line-height: 30px;
+        background: rgba(236, 255, 248, 0.1);
+      }
+
+      .screen-viewport {
+        position: absolute;
+        left: 20px;
+        top: 78px;
+        width: 1032px;
+        height: 574px;
+        overflow: hidden;
+        border-radius: 15px;
+        background: #effaf2;
+      }
+
+      .screen-canvas,
+      .lens-canvas,
+      .strip-canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .lens-shell {
+        position: absolute;
+        left: 1182px;
+        top: 122px;
+        width: 348px;
+        height: 348px;
+        z-index: 6;
+        overflow: hidden;
+        border: 5px solid rgba(104, 255, 218, 0.82);
+        border-radius: 50%;
+        background: #effaf2;
+        box-shadow:
+          0 28px 80px rgba(0, 0, 0, 0.42),
+          0 0 48px rgba(104, 255, 218, 0.26);
+      }
+
+      .lens-shell::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        box-shadow: inset 0 0 0 1px rgba(2, 18, 14, 0.4);
+        background: linear-gradient(rgba(2, 18, 14, 0.08) 1px, transparent 1px);
+        background-size: 100% 5px;
+        pointer-events: none;
+      }
+
+      .strip-shell {
+        position: absolute;
+        left: 880px;
+        top: 736px;
+        z-index: 7;
+        width: 760px;
+        height: 200px;
+        overflow: hidden;
+        border: 1px solid rgba(104, 255, 218, 0.34);
+        border-radius: 28px;
+        background: rgba(239, 250, 242, 0.94);
+        box-shadow: 0 32px 90px rgba(0, 0, 0, 0.4);
+      }
+
+      .callout-label {
+        position: absolute;
+        z-index: 8;
+        display: flex;
+        align-items: center;
+        height: 48px;
+        border: 1px solid rgba(104, 255, 218, 0.55);
+        border-radius: 999px;
+        padding: 0 18px;
+        color: #67ffd6;
+        font-size: 18px;
+        font-weight: 950;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        background: rgba(5, 12, 10, 0.82);
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.26);
+      }
+
+      .callout-label.primary {
+        left: 1448px;
+        top: 488px;
+      }
+
+      .callout-label.secondary {
+        left: 710px;
+        top: 654px;
+      }
+
+      .cursor-dot {
+        position: absolute;
+        z-index: 9;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: #67ffd6;
+        box-shadow:
+          0 0 0 8px rgba(104, 255, 218, 0.16),
+          0 0 24px rgba(104, 255, 218, 0.9);
+      }
+
+      .agent-card {
+        position: absolute;
+        right: 76px;
+        bottom: 72px;
+        z-index: 6;
+        width: 310px;
+        border: 1px solid rgba(236, 255, 248, 0.16);
+        border-radius: 18px;
+        padding: 18px 18px 16px;
+        background: rgba(5, 12, 10, 0.76);
+      }
+
+      .agent-card h2 {
+        margin: 0 0 12px;
+        color: #67ffd6;
+        font-size: 17px;
+        font-weight: 950;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .agent-card p {
+        margin: 0;
+        color: rgba(236, 255, 248, 0.7);
+        font-size: 15px;
+        font-weight: 750;
+        line-height: 1.35;
+      }
+
+      .fallback-stage .browser-shell {
+        opacity: 0.96;
+      }
+
+      .fallback-stage .screen-viewport {
+        display: flex;
+      }
+
+      .fallback-slot {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #effaf2;
+      }
+
+      .fallback-slot .source-screen {
+        transform: scale(0.80625);
+        transform-origin: top left;
+      }
+
+      .fallback-overlay {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(circle at 65% 47%, transparent 0 15%, rgba(4, 9, 8, 0.54) 15.3% 100%),
+          linear-gradient(rgba(2, 18, 14, 0.08) 1px, transparent 1px);
+        background-size:
+          auto,
+          100% 5px;
+        pointer-events: none;
+      }
+
+      .fallback-badge {
+        position: absolute;
+        left: 50px;
+        bottom: 34px;
+        border: 1px solid rgba(4, 9, 8, 0.16);
+        border-radius: 999px;
+        padding: 10px 14px;
+        color: #0a211b;
+        font-size: 15px;
+        font-weight: 950;
+        background: rgba(104, 255, 218, 0.78);
+      }
+
+      .source-screen {
+        width: 1280px;
+        height: 720px;
+        overflow: hidden;
+        color: #0c1814;
+        background: #effaf2;
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+      }
+
+      .source-grid {
+        display: grid;
+        grid-template-columns: 230px 1fr 320px;
+        width: 1280px;
+        height: 720px;
+      }
+
+      .source-sidebar {
+        padding: 34px 26px;
+        color: #effaf2;
+        background: #07110f;
+      }
+
+      .source-logo {
+        margin-bottom: 38px;
+        font-size: 25px;
+        font-weight: 950;
+      }
+
+      .source-logo span {
+        color: #20ddbc;
+      }
+
+      .source-nav {
+        display: grid;
+        gap: 13px;
+      }
+
+      .source-nav div {
+        border-radius: 12px;
+        padding: 14px 16px;
+        color: rgba(239, 250, 242, 0.62);
+        font-size: 15px;
+        font-weight: 900;
+        background: rgba(239, 250, 242, 0.08);
+      }
+
+      .source-nav div:first-child {
+        color: #07110f;
+        background: #67ffd6;
+      }
+
+      .source-main {
+        padding: 38px 34px;
+      }
+
+      .eyebrow {
+        margin-bottom: 12px;
+        color: #079b84;
+        font-size: 14px;
+        font-weight: 950;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .source-main h2 {
+        margin: 0 0 28px;
+        max-width: 560px;
+        font-size: 46px;
+        line-height: 0.98;
+        letter-spacing: 0;
+      }
+
+      .metric-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 28px;
+      }
+
+      .metric {
+        min-height: 96px;
+        border: 1px solid rgba(7, 17, 15, 0.12);
+        padding: 18px;
+        background: rgba(255, 255, 255, 0.66);
+      }
+
+      .metric strong {
+        display: block;
+        font-size: 32px;
+        font-weight: 950;
+      }
+
+      .metric span {
+        display: block;
+        margin-top: 8px;
+        color: rgba(12, 24, 20, 0.54);
+        font-size: 11px;
+        font-weight: 950;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .chart {
+        position: relative;
+        height: 260px;
+        border: 1px solid rgba(7, 17, 15, 0.1);
+        background:
+          linear-gradient(rgba(7, 17, 15, 0.06) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(7, 17, 15, 0.06) 1px, transparent 1px),
+          rgba(255, 255, 255, 0.42);
+        background-size: 44px 44px;
+      }
+
+      .chart svg {
+        position: absolute;
+        inset: 24px 34px;
+        width: calc(100% - 68px);
+        height: calc(100% - 48px);
+      }
+
+      .chart-focus {
+        position: absolute;
+        right: 70px;
+        top: 122px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #67ffd6;
+        box-shadow:
+          0 0 0 12px rgba(104, 255, 218, 0.18),
+          0 0 28px #67ffd6;
+      }
+
+      .source-panel {
+        display: grid;
+        gap: 18px;
+        padding: 38px 30px;
+        background: rgba(255, 255, 255, 0.44);
+      }
+
+      .panel-card {
+        border: 1px solid rgba(7, 17, 15, 0.11);
+        padding: 19px;
+        background: rgba(255, 255, 255, 0.62);
+      }
+
+      .panel-card.dark {
+        color: #effaf2;
+        background: #07110f;
+      }
+
+      .panel-card strong {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 15px;
+        font-weight: 950;
+      }
+
+      .panel-card p {
+        margin: 0;
+        color: rgba(12, 24, 20, 0.66);
+        font-size: 13px;
+        font-weight: 750;
+        line-height: 1.3;
+      }
+
+      .panel-card.dark p {
+        color: rgba(239, 250, 242, 0.72);
+      }
+    </style>
+  </head>
+  <body>
+    <!--
+      EXPERIMENTAL HTML-IN-CANVAS BLOCK
+
+      Creator workflow:
+      1. Replace the markup inside #screenSource with the UI, social proof, chart,
+         or product screen the creator wants to teach or sell.
+      2. Update CALLOUTS in the script to move the lens, spotlight, cursor, and
+         annotation labels to the important UI targets.
+      3. Keep the fallback DOM path intact. Native capture only runs when the
+         browser exposes layoutSubtree, requestPaint(), and drawElementImage().
+
+      Agent/browser setup:
+      - If you can control the user's browser, enable the feature flag yourself:
+        chrome://flags/#canvas-draw-element
+      - Tell the user to restart the browser after changing the feature flag.
+      - For automation/render launches, pass:
+        --enable-features=CanvasDrawElement
+      - This API is unstable. Do not promise production support without verifying
+        the target browser version.
+    -->
+    <div
+      id="experimental-screen-callout"
+      data-composition-id="experimental-screen-callout"
+      data-width="1920"
+      data-height="1080"
+      data-start="0"
+      data-duration="12"
+      data-native-canvas="false"
+    >
+      <div class="hero-copy">
+        <div class="label-pill">Experimental</div>
+        <h1>Teach any screen like a pro.</h1>
+        <p>
+          One editable DOM source becomes pixel-accurate zooms, spotlights, callouts, and crop
+          strips.
+        </p>
+      </div>
+
+      <div class="source-note">
+        <strong>Creator value</strong>
+        <span
+          >Edit HTML once. The lens, spotlight, and zoom strip all stay in sync with the same
+          screen.</span
+        >
+      </div>
+
+      <div class="stage native-stage">
+        <div class="browser-shell" id="nativeBrowserShell">
+          <div class="browser-bar">
+            <div class="browser-dots"><span></span><span></span><span></span></div>
+            <div class="url-bar">native://drawElementImage/screen-callout-source</div>
+          </div>
+          <div class="screen-viewport">
+            <canvas id="screenCanvas" class="screen-canvas" width="1032" height="574"></canvas>
+          </div>
+        </div>
+        <div class="lens-shell" id="lensShell">
+          <canvas id="lensCanvas" class="lens-canvas" width="348" height="348"></canvas>
+        </div>
+        <div class="strip-shell" id="stripShell">
+          <canvas id="stripCanvas" class="strip-canvas" width="760" height="200"></canvas>
+        </div>
+      </div>
+
+      <div class="stage fallback-stage">
+        <div class="browser-shell">
+          <div class="browser-bar">
+            <div class="browser-dots"><span></span><span></span><span></span></div>
+            <div class="url-bar">fallback://stable-browser/dom-screen</div>
+          </div>
+          <div class="screen-viewport">
+            <div id="fallbackSlot" class="fallback-slot"></div>
+            <div class="fallback-overlay"></div>
+            <div class="fallback-badge">Native disabled: DOM fallback</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout-label primary" id="primaryLabel">Zoom the metric</div>
+      <div class="callout-label secondary" id="secondaryLabel">Track the action</div>
+      <div class="cursor-dot" id="cursorDot"></div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-value">Native</div>
+          <div class="stat-label">when flagged</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">1 DOM</div>
+          <div class="stat-label">source</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">4 FX</div>
+          <div class="stat-label">callouts</div>
+        </div>
+      </div>
+
+      <div class="agent-card">
+        <h2>Agent edit points</h2>
+        <p>
+          Swap #screenSource, update CALLOUTS, preserve the fallback, then ask the user to restart
+          after enabling the CanvasDrawElement flag.
+        </p>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        window.__timelines = window.__timelines || {};
+
+        const root = document.getElementById("experimental-screen-callout");
+        const fallbackSlot = document.getElementById("fallbackSlot");
+        const screenCanvas = document.getElementById("screenCanvas");
+        const lensCanvas = document.getElementById("lensCanvas");
+        const stripCanvas = document.getElementById("stripCanvas");
+        const cursorDot = document.getElementById("cursorDot");
+        const primaryLabel = document.getElementById("primaryLabel");
+        const secondaryLabel = document.getElementById("secondaryLabel");
+        const screenCtx = screenCanvas.getContext("2d");
+        const lensCtx = lensCanvas.getContext("2d");
+        const stripCtx = stripCanvas.getContext("2d");
+
+        const SOURCE_W = 1280;
+        const SOURCE_H = 720;
+        const VIEW_W = 1032;
+        const VIEW_H = 574;
+        const SCALE = VIEW_W / SOURCE_W;
+
+        const CALLOUTS = [
+          {
+            time: 0,
+            sourceX: 936,
+            sourceY: 280,
+            radius: 132,
+            label: "Zoom the metric",
+            sublabel: "Revenue spike",
+          },
+          {
+            time: 4,
+            sourceX: 920,
+            sourceY: 505,
+            radius: 150,
+            label: "Track the action",
+            sublabel: "Timeline beat",
+          },
+          {
+            time: 8,
+            sourceX: 1118,
+            sourceY: 182,
+            radius: 128,
+            label: "Export-ready",
+            sublabel: "Use in product demos",
+          },
+        ];
+
+        const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+        const mix = (a, b, t) => a + (b - a) * t;
+        const ease = (t) => t * t * (3 - 2 * t);
+
+        const sourceTemplate = () => {
+          const node = document.createElement("div");
+          node.className = "source-screen";
+          node.id = "screenSource";
+          node.innerHTML = `
+            <div class="source-grid">
+              <aside class="source-sidebar">
+                <div class="source-logo">Frame<span>OS</span></div>
+                <nav class="source-nav">
+                  <div>Launch board</div>
+                  <div>Clips</div>
+                  <div>Analytics</div>
+                  <div>Exports</div>
+                  <div>Revenue</div>
+                </nav>
+              </aside>
+              <main class="source-main">
+                <div class="eyebrow">Realtime campaign</div>
+                <h2>Show the exact UI beat that makes users convert.</h2>
+                <div class="metric-row">
+                  <div class="metric"><strong>12.4M</strong><span>rendered pixels</span></div>
+                  <div class="metric"><strong>98%</strong><span>frame match</span></div>
+                  <div class="metric"><strong>24</strong><span>live layers</span></div>
+                </div>
+                <div class="chart">
+                  <svg viewBox="0 0 620 210" preserveAspectRatio="none">
+                    <path d="M20 165 C110 135 150 132 218 94 C290 53 346 138 420 90 C484 47 540 69 600 44" fill="none" stroke="#07110f" stroke-width="8" stroke-linecap="round" />
+                    <path d="M20 165 C110 135 150 132 218 94 C290 53 346 138 420 90 C484 47 540 69 600 44" fill="none" stroke="#20ddbc" stroke-width="5" stroke-linecap="round" />
+                  </svg>
+                  <div class="chart-focus"></div>
+                </div>
+              </main>
+              <section class="source-panel">
+                <div class="panel-card dark">
+                  <strong>Callout target</strong>
+                  <p>Use this panel for the exact feature, metric, or click path your video explains.</p>
+                </div>
+                <div class="panel-card">
+                  <strong>Editable HTML</strong>
+                  <p>Swap text, charts, images, and UI directly inside #screenSource.</p>
+                </div>
+                <div class="panel-card">
+                  <strong>Fallback safe</strong>
+                  <p>Stable browsers keep a clear DOM presentation instead of failing.</p>
+                </div>
+              </section>
+            </div>
+          `;
+          return node;
+        };
+
+        fallbackSlot.appendChild(sourceTemplate());
+
+        const supportsHtmlInCanvas = () => {
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          return Boolean(
+            canvas &&
+            "layoutSubtree" in canvas &&
+            typeof canvas.requestPaint === "function" &&
+            ctx &&
+            typeof ctx.drawElementImage === "function",
+          );
+        };
+
+        const createLayoutSource = () => {
+          const canvas = document.createElement("canvas");
+          canvas.width = SOURCE_W;
+          canvas.height = SOURCE_H;
+          canvas.layoutSubtree = true;
+          canvas.style.position = "absolute";
+          canvas.style.left = "24px";
+          canvas.style.top = "24px";
+          canvas.style.width = SOURCE_W + "px";
+          canvas.style.height = SOURCE_H + "px";
+          canvas.style.opacity = "0.001";
+          canvas.style.pointerEvents = "none";
+          canvas.style.zIndex = "-1";
+          const node = sourceTemplate();
+          canvas.appendChild(node);
+          document.body.appendChild(canvas);
+          return {
+            canvas,
+            node,
+            ctx: canvas.getContext("2d"),
+            width: SOURCE_W,
+            height: SOURCE_H,
+          };
+        };
+
+        const waitPaint = (source) =>
+          new Promise((resolve) => {
+            let done = false;
+            const finish = () => {
+              if (done) return;
+              done = true;
+              source.canvas.removeEventListener("paint", finish);
+              resolve();
+            };
+            source.canvas.addEventListener("paint", finish, { once: true });
+            source.canvas.requestPaint();
+            setTimeout(finish, 120);
+          });
+
+        const drawSource = (source) => {
+          source.ctx.setTransform(1, 0, 0, 1, 0, 0);
+          source.ctx.clearRect(0, 0, source.width, source.height);
+          source.ctx.drawElementImage(source.node, 0, 0, source.width, source.height);
+          window.__HF_EXPERIMENTAL_SCREEN_CALLOUT.drawElementCalls += 1;
+        };
+
+        const currentCallout = (time) => {
+          let index = 0;
+          if (time >= 8) index = 2;
+          else if (time >= 4) index = 1;
+          const next = CALLOUTS[index];
+          const prev = CALLOUTS[Math.max(0, index - 1)];
+          const local = index === 0 ? clamp(time / 3, 0, 1) : clamp((time - next.time) / 2.4, 0, 1);
+          const t = ease(local);
+          return {
+            sourceX: mix(prev.sourceX, next.sourceX, t),
+            sourceY: mix(prev.sourceY, next.sourceY, t),
+            radius: mix(prev.radius, next.radius, t),
+            label: next.label,
+            sublabel: next.sublabel,
+          };
+        };
+
+        const drawScanlines = (ctx, width, height, alpha) => {
+          ctx.save();
+          ctx.globalAlpha = alpha;
+          ctx.fillStyle = "#06110f";
+          for (let y = 0; y < height; y += 5) ctx.fillRect(0, y, width, 1);
+          ctx.restore();
+        };
+
+        const drawRing = (ctx, x, y, radius, pulse) => {
+          ctx.save();
+          ctx.strokeStyle = "#67ffd6";
+          ctx.lineWidth = 5;
+          ctx.shadowColor = "#67ffd6";
+          ctx.shadowBlur = 22;
+          ctx.beginPath();
+          ctx.arc(x, y, radius + pulse * 18, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.globalAlpha = 0.26;
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(x, y, radius + 34 + pulse * 18, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.restore();
+        };
+
+        const drawMain = (source, time) => {
+          const callout = currentCallout(time);
+          const x = callout.sourceX * SCALE;
+          const y = callout.sourceY * SCALE;
+          const r = callout.radius * SCALE;
+          const pulse = Math.sin(time * Math.PI * 1.6) * 0.5 + 0.5;
+
+          screenCtx.clearRect(0, 0, VIEW_W, VIEW_H);
+          screenCtx.drawImage(source.canvas, 0, 0, SOURCE_W, SOURCE_H, 0, 0, VIEW_W, VIEW_H);
+
+          screenCtx.save();
+          screenCtx.fillStyle = "rgba(3, 8, 7, 0.52)";
+          screenCtx.fillRect(0, 0, VIEW_W, VIEW_H);
+          screenCtx.globalCompositeOperation = "destination-out";
+          const gradient = screenCtx.createRadialGradient(x, y, r * 0.26, x, y, r);
+          gradient.addColorStop(0, "rgba(0,0,0,1)");
+          gradient.addColorStop(0.68, "rgba(0,0,0,0.82)");
+          gradient.addColorStop(1, "rgba(0,0,0,0)");
+          screenCtx.fillStyle = gradient;
+          screenCtx.beginPath();
+          screenCtx.arc(x, y, r, 0, Math.PI * 2);
+          screenCtx.fill();
+          screenCtx.restore();
+
+          screenCtx.save();
+          screenCtx.beginPath();
+          screenCtx.arc(x, y, r * 0.78, 0, Math.PI * 2);
+          screenCtx.clip();
+          const zoom = 1.28;
+          screenCtx.drawImage(
+            source.canvas,
+            callout.sourceX - r / SCALE / zoom,
+            callout.sourceY - r / SCALE / zoom,
+            (r * 2) / SCALE / zoom,
+            (r * 2) / SCALE / zoom,
+            x - r,
+            y - r,
+            r * 2,
+            r * 2,
+          );
+          screenCtx.restore();
+
+          drawRing(screenCtx, x, y, r * 0.82, pulse);
+          drawScanlines(screenCtx, VIEW_W, VIEW_H, 0.12);
+        };
+
+        const drawLens = (source, time) => {
+          const callout = currentCallout(time);
+          const lensW = lensCanvas.width;
+          const lensH = lensCanvas.height;
+          const cropW = 260;
+          const cropH = 260;
+          lensCtx.clearRect(0, 0, lensW, lensH);
+          lensCtx.fillStyle = "#effaf2";
+          lensCtx.fillRect(0, 0, lensW, lensH);
+          lensCtx.save();
+          lensCtx.beginPath();
+          lensCtx.arc(lensW / 2, lensH / 2, lensW / 2 - 2, 0, Math.PI * 2);
+          lensCtx.clip();
+          lensCtx.drawImage(
+            source.canvas,
+            callout.sourceX - cropW / 2,
+            callout.sourceY - cropH / 2,
+            cropW,
+            cropH,
+            -36,
+            -30,
+            lensW + 72,
+            lensH + 72,
+          );
+          lensCtx.restore();
+          drawScanlines(lensCtx, lensW, lensH, 0.15);
+        };
+
+        const drawStrip = (source, time) => {
+          const callout = currentCallout(time);
+          stripCtx.clearRect(0, 0, stripCanvas.width, stripCanvas.height);
+          stripCtx.fillStyle = "#effaf2";
+          stripCtx.fillRect(0, 0, stripCanvas.width, stripCanvas.height);
+          const slices = 38;
+          const cropW = 660;
+          const cropH = 170;
+          const sx = clamp(callout.sourceX - cropW / 2, 0, SOURCE_W - cropW);
+          const sy = clamp(callout.sourceY - cropH / 2, 0, SOURCE_H - cropH);
+          for (let i = 0; i < slices; i++) {
+            const sw = cropW / slices;
+            const dx = (stripCanvas.width / slices) * i;
+            const wave = Math.sin(i * 0.55 + time * 2.5) * 18;
+            const scaleY = 1 + Math.sin(i * 0.33 + time) * 0.08;
+            stripCtx.drawImage(
+              source.canvas,
+              sx + i * sw,
+              sy,
+              sw + 1,
+              cropH,
+              dx,
+              14 + wave,
+              stripCanvas.width / slices + 1,
+              cropH * scaleY,
+            );
+          }
+          stripCtx.fillStyle = "rgba(7, 17, 15, 0.84)";
+          stripCtx.fillRect(18, 18, 188, 44);
+          stripCtx.fillStyle = "#67ffd6";
+          stripCtx.font = "900 20px Inter, sans-serif";
+          stripCtx.fillText(callout.sublabel, 34, 47);
+          drawScanlines(stripCtx, stripCanvas.width, stripCanvas.height, 0.11);
+        };
+
+        let nativeSource = null;
+
+        const renderNative = (time) => {
+          if (!nativeSource) return;
+          drawSource(nativeSource);
+          drawMain(nativeSource, time);
+          drawLens(nativeSource, time);
+          drawStrip(nativeSource, time);
+        };
+
+        const updateOverlayPositions = (time) => {
+          const callout = currentCallout(time);
+          const x = 690 + 20 + callout.sourceX * SCALE;
+          const y = 214 + 78 + callout.sourceY * SCALE;
+          cursorDot.style.left = x - 11 + "px";
+          cursorDot.style.top = y - 11 + "px";
+          primaryLabel.textContent = callout.label;
+          secondaryLabel.textContent = callout.sublabel;
+        };
+
+        const state = { t: 0 };
+        const tl = gsap.timeline({
+          paused: true,
+          onUpdate: () => {
+            updateOverlayPositions(state.t);
+            if (window.__HF_EXPERIMENTAL_SCREEN_CALLOUT.native) renderNative(state.t);
+          },
+        });
+
+        gsap.set([".browser-shell", ".lens-shell", ".strip-shell"], {
+          transformOrigin: "50% 50%",
+        });
+        gsap.set(".browser-shell", { scale: 0.9, opacity: 0, y: 70 });
+        gsap.set(".lens-shell", { scale: 0.72, opacity: 0, y: 34 });
+        gsap.set(".strip-shell", { scale: 0.86, opacity: 0, y: 70 });
+        gsap.set(".callout-label", { opacity: 0, y: 22 });
+        gsap.set(".cursor-dot", { opacity: 0, scale: 0.6 });
+        gsap.set(".stat-card", { opacity: 0, y: 30 });
+        gsap.set(".agent-card", { opacity: 0, y: 24 });
+
+        tl.to(
+          ".browser-shell",
+          { scale: 1, opacity: 1, y: 0, duration: 0.8, ease: "power3.out" },
+          0.2,
+        );
+        tl.to(
+          ".stat-card",
+          { opacity: 1, y: 0, stagger: 0.1, duration: 0.45, ease: "power3.out" },
+          0.45,
+        );
+        tl.to(".cursor-dot", { opacity: 1, scale: 1, duration: 0.3, ease: "power2.out" }, 1.0);
+        tl.to(
+          ".callout-label",
+          { opacity: 1, y: 0, stagger: 0.08, duration: 0.38, ease: "power2.out" },
+          1.12,
+        );
+        tl.to(
+          ".lens-shell",
+          { scale: 1, opacity: 1, y: 0, duration: 0.58, ease: "back.out(1.4)" },
+          1.45,
+        );
+        tl.to(
+          ".strip-shell",
+          { scale: 1, opacity: 1, y: 0, duration: 0.62, ease: "power3.out" },
+          2.1,
+        );
+        tl.to(".agent-card", { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, 2.55);
+        tl.to(state, { t: 12, duration: 12, ease: "none" }, 0);
+        tl.to(".lens-shell", { x: -80, y: 60, duration: 2.4, ease: "power1.inOut" }, 4.1);
+        tl.to(".strip-shell", { x: 80, y: -24, duration: 2.2, ease: "power1.inOut" }, 7.8);
+        tl.to(".browser-shell", { rotate: 1.3, duration: 2.8, ease: "sine.inOut" }, 8.8);
+
+        window.__HF_EXPERIMENTAL_SCREEN_CALLOUT = {
+          native: false,
+          drawElementCalls: 0,
+          ready: false,
+        };
+
+        window.__timelines["experimental-screen-callout"] = tl;
+
+        updateOverlayPositions(0);
+
+        const bootNative = async () => {
+          if (!supportsHtmlInCanvas()) {
+            window.__HF_EXPERIMENTAL_SCREEN_CALLOUT.ready = true;
+            return;
+          }
+
+          try {
+            nativeSource = createLayoutSource();
+            await waitPaint(nativeSource);
+            root.setAttribute("data-native-canvas", "true");
+            window.__HF_EXPERIMENTAL_SCREEN_CALLOUT.native = true;
+            window.__HF_EXPERIMENTAL_SCREEN_CALLOUT.ready = true;
+            renderNative(0);
+          } catch (error) {
+            window.__HF_EXPERIMENTAL_SCREEN_CALLOUT.native = false;
+            window.__HF_EXPERIMENTAL_SCREEN_CALLOUT.ready = true;
+          }
+        };
+
+        bootNative();
+      })();
+    </script>
+  </body>
+</html>

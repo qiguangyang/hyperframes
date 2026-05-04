@@ -1,0 +1,58 @@
+---
+title: "Experimental Screen Callout"
+description: "Creator workflow block for product tutorials: edit one DOM screen, then add native canvas zoom lenses, spotlights, cursor trails, and annotations"
+---
+
+# Experimental Screen Callout
+
+Creator workflow block for product tutorials: edit one DOM screen, then add native canvas zoom lenses, spotlights, cursor trails, and annotations
+
+`experimental` `tutorial` `screen` `callout` `canvas`
+
+<Warning>
+This catalog item is experimental. Its native path uses Chrome's HTML-in-canvas API, which is unstable and can change or be removed. Stable Chrome keeps the fallback path. For native rendering, enable `chrome://flags/#canvas-draw-element`, restart the browser after changing the flag, or launch Chromium with `--enable-features=CanvasDrawElement`.
+</Warning>
+
+## Agent Setup
+
+When adapting this item for a user, edit the feature flag yourself when browser access is available, then tell the user to restart the browser before previewing again. If launching Chromium from automation or render scripts, include:
+
+```bash
+--enable-features=CanvasDrawElement
+```
+
+Do not assume native capture is available. Keep the fallback path intact and verify `drawElementImage` support in the target browser.
+
+<video className="w-full aspect-video rounded-xl object-cover bg-zinc-100 dark:bg-zinc-800" src="https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/experimental-screen-callout.mp4" poster="https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/experimental-screen-callout.png" autoPlay muted loop playsInline />
+
+## Install
+
+<CodeGroup>
+
+```bash Terminal
+npx hyperframes add experimental-screen-callout
+```
+
+</CodeGroup>
+
+## Details
+
+| Property | Value |
+| --- | --- |
+| Type | Block |
+| Dimensions | 1920×1080 |
+| Duration | 12s |
+
+## Files
+
+| File | Target | Type |
+| --- | --- | --- |
+| `experimental-screen-callout.html` | `compositions/experimental-screen-callout.html` | hyperframes:composition |
+
+## Usage
+
+After installing, add the block to your host composition:
+
+```html
+<div data-composition-id="experimental-screen-callout" data-composition-src="compositions/experimental-screen-callout.html" data-start="0" data-duration="12" data-track-index="1" data-width="1920" data-height="1080"></div>
+```

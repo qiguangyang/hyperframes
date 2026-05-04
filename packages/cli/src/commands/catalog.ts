@@ -85,6 +85,7 @@ export default defineCommand({
         title: item.title,
         description: item.description,
         tags: item.tags ?? [],
+        ...(item.stability ? { stability: item.stability } : {}),
         ...("dimensions" in item && item.dimensions ? { dimensions: item.dimensions } : {}),
         ...("duration" in item && item.duration ? { duration: item.duration } : {}),
       }));
@@ -96,7 +97,10 @@ export default defineCommand({
       const options = matching.map((item) => ({
         value: item.name,
         label: item.name,
-        hint: item.description,
+        hint:
+          item.stability === "experimental"
+            ? `[experimental] ${item.description}`
+            : item.description,
       }));
 
       const selected = await clack.select({
@@ -139,8 +143,9 @@ export default defineCommand({
     for (const item of matching) {
       const type = item.type.replace("hyperframes:", "");
       const tags = item.tags?.length ? c.dim(` [${item.tags.join(", ")}]`) : "";
+      const typeLabel = item.stability === "experimental" ? `${type} exp` : type;
       console.log(
-        `${c.cyan(item.name.padEnd(NAME_COL))}${type.padEnd(TYPE_COL)}${item.description}${tags}`,
+        `${c.cyan(item.name.padEnd(NAME_COL))}${typeLabel.padEnd(TYPE_COL)}${item.description}${tags}`,
       );
     }
 

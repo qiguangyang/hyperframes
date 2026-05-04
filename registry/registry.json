@@ -96,6 +96,10 @@
       "type": "hyperframes:block"
     },
     {
+      "name": "experimental-screen-callout",
+      "type": "hyperframes:block"
+    },
+    {
       "name": "north-korea-locked-down",
       "type": "hyperframes:block"
     },

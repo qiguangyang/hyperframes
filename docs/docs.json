@@ -139,11 +139,17 @@
             ]
           },
           {
+            "group": "Experimental",
+            "pages": [
+              "catalog/blocks/canvas-dom-refractor",
+              "catalog/blocks/experimental-screen-callout"
+            ]
+          },
+          {
             "group": "Showcases",
             "pages": [
               "catalog/blocks/app-showcase",
               "catalog/blocks/apple-money-count",
-              "catalog/blocks/canvas-dom-refractor",
               "catalog/blocks/goonvpn-youtube-spot",
               "catalog/blocks/north-korea-locked-down",
               "catalog/blocks/nyc-paris-flight",

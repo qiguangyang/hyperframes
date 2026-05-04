@@ -58,6 +58,11 @@
       "minLength": 1,
       "description": "If set, the item is deprecated; the value is the reason or migration note."
     },
+    "stability": {
+      "type": "string",
+      "enum": ["stable", "experimental"],
+      "description": "Stability label for catalog surfaces. Omitted means stable."
+    },
     "dimensions": {
       "type": "object",
       "required": ["width", "height"],

@@ -4,7 +4,8 @@
   "type": "hyperframes:block",
   "title": "Canvas DOM Refractor",
   "description": "Native HTML-in-canvas showcase that refracts, magnifies, slices, and curves one editable DOM source as pixels",
-  "tags": ["showcase", "canvas", "html", "refractor", "native"],
+  "tags": ["experimental", "showcase", "canvas", "html", "refractor", "native"],
+  "stability": "experimental",
   "dimensions": {
     "width": 1920,
     "height": 1080

@@ -7,7 +7,21 @@ description: "Native HTML-in-canvas showcase that refracts, magnifies, slices, a
 
 Native HTML-in-canvas showcase that refracts, magnifies, slices, and curves one editable DOM source as pixels
 
-`showcase` `canvas` `html` `refractor` `native`
+`experimental` `showcase` `canvas` `html` `refractor` `native`
+
+<Warning>
+This catalog item is experimental. Its native path uses Chrome's HTML-in-canvas API, which is unstable and can change or be removed. Stable Chrome keeps the fallback path. For native rendering, enable `chrome://flags/#canvas-draw-element`, restart the browser after changing the flag, or launch Chromium with `--enable-features=CanvasDrawElement`.
+</Warning>
+
+## Agent Setup
+
+When adapting this item for a user, edit the feature flag yourself when browser access is available, then tell the user to restart the browser before previewing again. If launching Chromium from automation or render scripts, include:
+
+```bash
+--enable-features=CanvasDrawElement
+```
+
+Do not assume native capture is available. Keep the fallback path intact and verify `drawElementImage` support in the target browser.
 
 <video className="w-full aspect-video rounded-xl object-cover bg-zinc-100 dark:bg-zinc-800" src="https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/canvas-dom-refractor.mp4" poster="https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/canvas-dom-refractor.png" autoPlay muted loop playsInline />
 
