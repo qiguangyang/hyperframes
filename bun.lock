@@ -21,7 +21,7 @@
     },
     "packages/cli": {
       "name": "@hyperframes/cli",
-      "version": "0.4.42",
+      "version": "0.4.44",
       "bin": {
         "hyperframes": "./dist/cli.js",
       },
@@ -59,12 +59,12 @@
         "vitest": "^3.2.4",
       },
       "optionalDependencies": {
-        "@google/genai": "^1.50.1",
+        "@google/genai": "^1.52.0",
       },
     },
     "packages/core": {
       "name": "@hyperframes/core",
-      "version": "0.4.42",
+      "version": "0.4.44",
       "dependencies": {
         "@chenglou/pretext": "^0.0.5",
         "postcss": "^8.5.8",
@@ -91,7 +91,7 @@
     },
     "packages/engine": {
       "name": "@hyperframes/engine",
-      "version": "0.4.42",
+      "version": "0.4.44",
       "dependencies": {
         "@hono/node-server": "^1.13.0",
         "@hyperframes/core": "workspace:^",
@@ -109,7 +109,7 @@
     },
     "packages/player": {
       "name": "@hyperframes/player",
-      "version": "0.4.42",
+      "version": "0.4.44",
       "devDependencies": {
         "@types/bun": "^1.1.0",
         "gsap": "^3.12.5",
@@ -121,7 +121,7 @@
     },
     "packages/producer": {
       "name": "@hyperframes/producer",
-      "version": "0.4.42",
+      "version": "0.4.44",
       "dependencies": {
         "@fontsource/archivo-black": "^5.2.8",
         "@fontsource/eb-garamond": "^5.2.7",
@@ -160,7 +160,7 @@
     },
     "packages/shader-transitions": {
       "name": "@hyperframes/shader-transitions",
-      "version": "0.4.42",
+      "version": "0.4.44",
       "dependencies": {
         "html2canvas": "^1.4.1",
       },
@@ -172,7 +172,7 @@
     },
     "packages/studio": {
       "name": "@hyperframes/studio",
-      "version": "0.4.42",
+      "version": "0.4.44",
       "dependencies": {
         "@codemirror/autocomplete": "^6.20.1",
         "@codemirror/commands": "^6.10.3",
@@ -438,7 +438,7 @@
 
     "@fontsource/space-mono": ["@fontsource/space-mono@5.2.9", "", {}, "sha512-b61faFOHEISQ/pD25G+cfGY9o/WW6lRv6hBQQfpWvEJ4y1V+S4gmth95EVyBE2VL3qDYHeVQ8nBzrplzdXTDDg=="],
 
-    "@google/genai": ["@google/genai@1.50.1", "", { "dependencies": { "google-auth-library": "^10.3.0", "p-retry": "^4.6.2", "protobufjs": "^7.5.4", "ws": "^8.18.0" }, "peerDependencies": { "@modelcontextprotocol/sdk": "^1.25.2" }, "optionalPeers": ["@modelcontextprotocol/sdk"] }, "sha512-YbkX7H9+1Pt8wOt7DDREy8XSoiL6fRDzZQRyaVBarFf8MR3zHGqVdvM4cLbDXqPhxqvegZShgfxb8kw9C7YhAQ=="],
+    "@google/genai": ["@google/genai@1.52.0", "", { "dependencies": { "google-auth-library": "^10.3.0", "p-retry": "^4.6.2", "protobufjs": "^7.5.4", "ws": "^8.18.0" }, "peerDependencies": { "@modelcontextprotocol/sdk": "^1.25.2" }, "optionalPeers": ["@modelcontextprotocol/sdk"] }, "sha512-gwSvbpiN/17O9TbsqSsE/OzZcpv5Fo4RQjdngGgogtuB9RsyJ8ZHhX5KjHj1bp5N9snN2eK8LDGXSaWW2hof8Q=="],
 
     "@hono/node-server": ["@hono/node-server@1.19.11", "", { "peerDependencies": { "hono": "4.12.8" } }, "sha512-dr8/3zEaB+p0D2n/IUrlPF1HZm586qgJNXK1a9fhg/PzdtkK7Ksd5l312tJX2yBuALqDYBlG20QEbayqPyxn+g=="],
 
