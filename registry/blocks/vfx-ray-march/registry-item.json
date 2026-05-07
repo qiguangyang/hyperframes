@@ -1,0 +1,21 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "vfx-ray-march",
+  "type": "hyperframes:block",
+  "title": "SDF Ray March",
+  "description": "GPU ray marching through morphing signed distance fields — infinite tunnel with fractal geometry",
+  "stability": "experimental",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 8,
+  "tags": ["three-js", "shader", "ray-march", "sdf", "fractal"],
+  "files": [
+    {
+      "path": "vfx-ray-march.html",
+      "target": "compositions/vfx-ray-march.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

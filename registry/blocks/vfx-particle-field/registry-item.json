@@ -1,0 +1,21 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "vfx-particle-field",
+  "type": "hyperframes:block",
+  "title": "Particle Field",
+  "description": "GPU particle system — thousands of points that form text, dissolve into noise, and reform into shapes",
+  "stability": "experimental",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 10,
+  "tags": ["three-js", "particles", "gpu", "morphing"],
+  "files": [
+    {
+      "path": "vfx-particle-field.html",
+      "target": "compositions/vfx-particle-field.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

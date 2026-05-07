@@ -1,0 +1,21 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "vfx-god-rays",
+  "type": "hyperframes:block",
+  "title": "Volumetric Light Rays",
+  "description": "Post-process god rays (crepuscular rays) radiating from a light source through a Three.js scene with occluding geometry",
+  "stability": "experimental",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 8,
+  "tags": ["three-js", "shader", "volumetric", "post-process"],
+  "files": [
+    {
+      "path": "vfx-god-rays.html",
+      "target": "compositions/vfx-god-rays.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}
