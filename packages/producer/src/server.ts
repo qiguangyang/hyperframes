@@ -35,6 +35,7 @@ import {
   executeRenderJob,
 } from "./services/renderOrchestrator.js";
 import { compileForRender } from "./services/htmlCompiler.js";
+import { processCompositionAudio } from "./services/audioMixer.js";
 import { prepareHyperframeLintBody, runHyperframeLint } from "./services/hyperframeLint.js";
 import { resolveRenderPaths } from "./utils/paths.js";
 import { defaultLogger, type ProducerLogger } from "./logger.js";
@@ -255,6 +256,7 @@ function cleanupTempDir(dir: string | undefined, log: ProducerLogger): void {
 export interface RenderHandlers {
   render: (c: Context) => Promise<Response>;
   renderStream: (c: Context) => Response | Promise<Response>;
+  renderAudio: (c: Context) => Promise<Response>;
   probe: (c: Context) => Promise<Response>;
   lint: (c: Context) => Promise<Response>;
   health: (c: Context) => Response;
@@ -646,7 +648,71 @@ export function createRenderHandlers(options: HandlerOptions = {}): RenderHandle
     }
   };
 
-  return { render, renderStream, probe, lint, health, outputs, queue };
+  const renderAudio = async (c: Context): Promise<Response> => {
+    const body = (await c.req.json().catch(() => ({}))) as Record<string, unknown>;
+    const result = await prepareRenderBody(body);
+    if ("error" in result) return c.json({ error: result.error }, 400);
+    const { prepared } = result;
+    const { input } = prepared;
+
+    const entryFile = input.entryFile ?? "index.html";
+    const htmlPath = resolve(input.projectDir, entryFile);
+    const downloadDir = resolve(input.projectDir, ".audio-downloads");
+    const audioWorkDir = resolve(input.projectDir, ".audio-work");
+
+    try {
+      mkdirSync(downloadDir, { recursive: true });
+      mkdirSync(audioWorkDir, { recursive: true });
+      const compiled = await compileForRender(input.projectDir, htmlPath, downloadDir);
+
+      if (compiled.audios.length === 0) {
+        rmSync(downloadDir, { recursive: true, force: true });
+        rmSync(audioWorkDir, { recursive: true, force: true });
+        if (prepared.cleanupProjectDir)
+          rmSync(prepared.cleanupProjectDir, { recursive: true, force: true });
+        return c.json({ hasAudio: false, outputPath: null });
+      }
+
+      const outputPath = input.outputPath || resolve(input.projectDir, "audio.aac");
+      const compiledDir = resolve(input.projectDir, ".audio-downloads");
+
+      const audioResult = await processCompositionAudio(
+        compiled.audios,
+        input.projectDir,
+        audioWorkDir,
+        outputPath,
+        compiled.staticDuration,
+        undefined,
+        undefined,
+        compiledDir,
+      );
+
+      rmSync(downloadDir, { recursive: true, force: true });
+      rmSync(audioWorkDir, { recursive: true, force: true });
+      if (prepared.cleanupProjectDir)
+        rmSync(prepared.cleanupProjectDir, { recursive: true, force: true });
+
+      if (!audioResult.success) {
+        return c.json({ error: audioResult.error || "Audio processing failed" }, 500);
+      }
+
+      return c.json({
+        hasAudio: true,
+        outputPath,
+        durationSeconds: compiled.staticDuration,
+        tracksProcessed: audioResult.tracksProcessed,
+        durationMs: audioResult.durationMs,
+      });
+    } catch (err) {
+      rmSync(downloadDir, { recursive: true, force: true });
+      rmSync(audioWorkDir, { recursive: true, force: true });
+      if (prepared.cleanupProjectDir)
+        rmSync(prepared.cleanupProjectDir, { recursive: true, force: true });
+      return c.json({ error: err instanceof Error ? err.message : String(err) }, 500);
+    }
+  };
+
+  return { render, renderStream, renderAudio, probe, lint, health, outputs, queue };
 }
 
 // ---------------------------------------------------------------------------
@@ -664,6 +730,7 @@ export function createProducerApp(options: HandlerOptions = {}): Hono {
   app.post("/probe", handlers.probe);
   app.post("/render", handlers.render);
   app.post("/render/stream", handlers.renderStream);
+  app.post("/render/audio", handlers.renderAudio);
   app.get("/render/queue", handlers.queue);
   app.post("/lint", handlers.lint);
   app.get("/outputs/:token", handlers.outputs);
