@@ -1,6 +1,49 @@
 import { describe, it, expect, vi } from "vitest";
 import { WebAudioTransport } from "./webAudioTransport";
 
+function createMockAudioContext(currentTime = 100) {
+  const startFn = vi.fn();
+  const sourceNode = {
+    buffer: null as AudioBuffer | null,
+    playbackRate: { value: 1 },
+    start: startFn,
+    stop: vi.fn(),
+    disconnect: vi.fn(),
+    connect: vi.fn(),
+  };
+  const gainNode = {
+    gain: { value: 1 },
+    connect: vi.fn(),
+    disconnect: vi.fn(),
+  };
+  const masterGain = {
+    gain: { value: 1 },
+    connect: vi.fn(),
+  };
+  const ctx = {
+    currentTime,
+    state: "running",
+    resume: vi.fn(),
+    createBufferSource: vi.fn(() => sourceNode),
+    createGain: vi.fn(() => gainNode),
+    destination: {},
+    close: vi.fn(),
+  };
+  return { ctx, sourceNode, gainNode, masterGain, startFn };
+}
+
+function setupTransport(currentTime = 100) {
+  const transport = new WebAudioTransport();
+  const mock = createMockAudioContext(currentTime);
+  (transport as unknown as { _ctx: unknown })._ctx = mock.ctx;
+  (transport as unknown as { _masterGain: unknown })._masterGain = mock.masterGain;
+  const gen = transport.startGeneration();
+  return { transport, mock, gen };
+}
+
+const mockBuffer = {} as AudioBuffer;
+const mockEl = { muted: false } as HTMLMediaElement;
+
 describe("WebAudioTransport", () => {
   it("tracks play generation for async race prevention", () => {
     const transport = new WebAudioTransport();
@@ -82,49 +125,6 @@ describe("WebAudioTransport", () => {
   });
 
   describe("schedulePlayback timing", () => {
-    function createMockAudioContext(currentTime = 100) {
-      const startFn = vi.fn();
-      const sourceNode = {
-        buffer: null as AudioBuffer | null,
-        playbackRate: { value: 1 },
-        start: startFn,
-        stop: vi.fn(),
-        disconnect: vi.fn(),
-        connect: vi.fn(),
-      };
-      const gainNode = {
-        gain: { value: 1 },
-        connect: vi.fn(),
-        disconnect: vi.fn(),
-      };
-      const masterGain = {
-        gain: { value: 1 },
-        connect: vi.fn(),
-      };
-      const ctx = {
-        currentTime,
-        state: "running",
-        resume: vi.fn(),
-        createBufferSource: vi.fn(() => sourceNode),
-        createGain: vi.fn(() => gainNode),
-        destination: {},
-        close: vi.fn(),
-      };
-      return { ctx, sourceNode, gainNode, masterGain, startFn };
-    }
-
-    function setupTransport(currentTime = 100) {
-      const transport = new WebAudioTransport();
-      const mock = createMockAudioContext(currentTime);
-      (transport as unknown as { _ctx: unknown })._ctx = mock.ctx;
-      (transport as unknown as { _masterGain: unknown })._masterGain = mock.masterGain;
-      const gen = transport.startGeneration();
-      return { transport, mock, gen };
-    }
-
-    const mockBuffer = {} as AudioBuffer;
-    const mockEl = { muted: false } as HTMLMediaElement;
-
     it("starts in-progress clips immediately with correct buffer offset", async () => {
       const { transport, mock, gen } = setupTransport(100);
 
@@ -167,49 +167,6 @@ describe("WebAudioTransport", () => {
   });
 
   describe("playback rate", () => {
-    function createMockAudioContext(currentTime = 100) {
-      const startFn = vi.fn();
-      const sourceNode = {
-        buffer: null as AudioBuffer | null,
-        playbackRate: { value: 1 },
-        start: startFn,
-        stop: vi.fn(),
-        disconnect: vi.fn(),
-        connect: vi.fn(),
-      };
-      const gainNode = {
-        gain: { value: 1 },
-        connect: vi.fn(),
-        disconnect: vi.fn(),
-      };
-      const masterGain = {
-        gain: { value: 1 },
-        connect: vi.fn(),
-      };
-      const ctx = {
-        currentTime,
-        state: "running",
-        resume: vi.fn(),
-        createBufferSource: vi.fn(() => sourceNode),
-        createGain: vi.fn(() => gainNode),
-        destination: {},
-        close: vi.fn(),
-      };
-      return { ctx, sourceNode, gainNode, masterGain, startFn };
-    }
-
-    function setupTransport(currentTime = 100) {
-      const transport = new WebAudioTransport();
-      const mock = createMockAudioContext(currentTime);
-      (transport as unknown as { _ctx: unknown })._ctx = mock.ctx;
-      (transport as unknown as { _masterGain: unknown })._masterGain = mock.masterGain;
-      const gen = transport.startGeneration();
-      return { transport, mock, gen };
-    }
-
-    const mockBuffer = {} as AudioBuffer;
-    const mockEl = { muted: false } as HTMLMediaElement;
-
     it("sets sourceNode.playbackRate.value when rate is provided", async () => {
       const { transport, mock, gen } = setupTransport(100);
 
@@ -236,10 +193,6 @@ describe("WebAudioTransport", () => {
     });
 
     it("keeps in-progress buffer offset at elapsed + mediaStart regardless of rate", async () => {
-      // Audio that has been playing for `elapsed` composition seconds at rate r:
-      //   wallclock elapsed = elapsed / r
-      //   buffer advanced  = (elapsed / r) × r = elapsed
-      // so the buffer offset is `elapsed + mediaStart` for any rate.
       const { transport, mock, gen } = setupTransport(100);
 
       await transport.schedulePlayback(mockEl, mockBuffer, 5, 0, 8, 1, gen, 2);
@@ -263,16 +216,34 @@ describe("WebAudioTransport", () => {
       expect(() => transport.setRate(2)).not.toThrow();
     });
 
+    it("setRate is a no-op when the rate is unchanged", async () => {
+      const { transport, mock, gen } = setupTransport(100);
+      await transport.schedulePlayback(mockEl, mockBuffer, 5, 0, 8, 1, gen, 2);
+
+      mock.ctx.currentTime = 100.5;
+      const timeBefore = transport.getTime();
+      transport.setRate(2);
+      const timeAfter = transport.getTime();
+
+      expect(timeAfter).toBe(timeBefore);
+      // No re-anchor, so the next 0.5s of wallclock still maps to 1s of comp time.
+      mock.ctx.currentTime = 101;
+      expect(transport.getTime()).toBeCloseTo(10, 10);
+    });
+
     it("setRate clamps non-finite or non-positive values to 1", async () => {
       const { transport, mock, gen } = setupTransport(100);
-      await transport.schedulePlayback(mockEl, mockBuffer, 5, 0, 8, 1, gen, 1);
+      await transport.schedulePlayback(mockEl, mockBuffer, 5, 0, 8, 1, gen, 2);
+      expect(mock.sourceNode.playbackRate.value).toBe(2);
 
       transport.setRate(Number.NaN);
       expect(mock.sourceNode.playbackRate.value).toBe(1);
 
+      transport.setRate(2);
       transport.setRate(0);
       expect(mock.sourceNode.playbackRate.value).toBe(1);
 
+      transport.setRate(2);
       transport.setRate(-1);
       expect(mock.sourceNode.playbackRate.value).toBe(1);
     });

@@ -112,14 +112,8 @@ export class WebAudioTransport {
       this._rateAnchorComp = compositionTime;
 
       if (elapsed >= 0) {
-        // Audio that has already been "playing" for `elapsed` composition
-        // seconds at rate r has advanced exactly `elapsed` buffer seconds —
-        // wallclock elapsed is `elapsed / r` and the source plays at rate r,
-        // so buffer advance = (elapsed / r) × r = elapsed.
         sourceNode.start(0, elapsed + mediaStart);
       } else {
-        // Future clip: composition time will reach `compositionStart` after
-        // `-elapsed` composition seconds, which is `-elapsed / r` wallclock.
         const delay = -elapsed / safeRate;
         sourceNode.start(scheduledAt + delay, mediaStart);
       }
@@ -146,18 +140,14 @@ export class WebAudioTransport {
   }
 
   /**
-   * Change the playback rate of every currently-active source in place.
-   *
-   * Also rebases the composition-time reference frame so `getTime()` keeps
-   * returning the same value across the rate change (i.e. the clock doesn't
-   * jump, it just advances at a different slope from here on).
-   *
-   * Note: sources scheduled to start in the future via `sourceNode.start(when)`
-   * keep their original wallclock start time. Callers that need rate-correct
-   * future-start times should `stopAll()` and reschedule.
+   * Rebases the composition-time reference frame before swapping rate so
+   * `getTime()` stays continuous across the change. Sources scheduled to
+   * start in the future keep their original wallclock start time — callers
+   * that need rate-correct future starts should `stopAll()` and reschedule.
    */
   setRate(rate: number): void {
     const safeRate = normalizeRate(rate);
+    if (safeRate === this._rate) return;
     if (this._ctx && !this._paused) {
       this._rateAnchorComp = this.getTime();
       this._rateAnchorCtx = this._ctx.currentTime;
