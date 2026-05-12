@@ -86,9 +86,8 @@ import {
   compositeHdrFrame,
   createHdrPerfCollector,
   resolveCompositeTransfer,
-  updateJobStatus,
 } from "../../renderOrchestrator.js";
-import { type CompositionMetadata } from "../shared.js";
+import { updateJobStatus, type CompositionMetadata } from "../shared.js";
 
 export interface CaptureHdrStageInput {
   job: RenderJob;

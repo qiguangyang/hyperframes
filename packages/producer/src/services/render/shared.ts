@@ -17,6 +17,7 @@ import type { AudioElement, EngineConfig, ImageElement, VideoElement } from "@hy
 import type { CompiledComposition } from "../htmlCompiler.js";
 import { defaultLogger, type ProducerLogger } from "../../logger.js";
 import { isPathInside } from "../../utils/paths.js";
+import type { ProgressCallback, RenderJob, RenderStatus } from "../renderOrchestrator.js";
 
 export interface CompositionMetadata {
   duration: number;
@@ -201,4 +202,27 @@ export function applyRenderModeHints(
     reasonCodes: compiled.renderModeHints.reasons.map((reason) => reason.code),
     reasons: compiled.renderModeHints.reasons.map((reason) => reason.message),
   });
+}
+
+/**
+ * Mutate the `RenderJob` view of the pipeline's progress and fire the
+ * caller's `onProgress` callback. Hoisted here (out of `renderOrchestrator.ts`)
+ * so the stage modules can call it without forming a runtime cycle.
+ *
+ * `completedAt` is stamped on the terminal `"failed"` / `"complete"`
+ * transitions so callers that poll the job state can tell when the
+ * pipeline finished.
+ */
+export function updateJobStatus(
+  job: RenderJob,
+  status: RenderStatus,
+  stage: string,
+  progress: number,
+  onProgress?: ProgressCallback,
+): void {
+  job.status = status;
+  job.currentStage = stage;
+  job.progress = progress;
+  if (status === "failed" || status === "complete") job.completedAt = new Date();
+  if (onProgress) onProgress(job, stage);
 }

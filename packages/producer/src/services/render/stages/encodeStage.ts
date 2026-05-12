@@ -34,11 +34,8 @@ import {
   getEncoderPreset,
 } from "@hyperframes/engine";
 import type { ProducerLogger } from "../../../logger.js";
-import {
-  updateJobStatus,
-  type ProgressCallback,
-  type RenderJob,
-} from "../../renderOrchestrator.js";
+import type { ProgressCallback, RenderJob } from "../../renderOrchestrator.js";
+import { updateJobStatus } from "../shared.js";
 
 export interface EncodeStageInput {
   job: RenderJob;

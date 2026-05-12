@@ -51,11 +51,11 @@ import type { FileServerHandle } from "../../fileServer.js";
 import type { ProducerLogger } from "../../../logger.js";
 import {
   executeDiskCaptureWithAdaptiveRetry,
-  updateJobStatus,
   type CaptureAttemptSummary,
   type ProgressCallback,
   type RenderJob,
 } from "../../renderOrchestrator.js";
+import { updateJobStatus } from "../shared.js";
 
 export interface CaptureStageInput {
   fileServer: FileServerHandle;

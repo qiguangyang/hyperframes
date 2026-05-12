@@ -92,6 +92,7 @@ import { type CompiledComposition } from "./htmlCompiler.js";
 import { defaultLogger, type ProducerLogger } from "../logger.js";
 import { isPathInside } from "../utils/paths.js";
 import { type HdrImageTransferCache } from "./hdrImageTransferCache.js";
+import { updateJobStatus } from "./render/shared.js";
 import { runCompileStage } from "./render/stages/compileStage.js";
 import { runProbeStage } from "./render/stages/probeStage.js";
 import { runExtractVideosStage } from "./render/stages/extractVideosStage.js";
@@ -542,20 +543,6 @@ export class RenderCancelledError extends Error {
     this.name = "RenderCancelledError";
     this.reason = reason;
   }
-}
-
-export function updateJobStatus(
-  job: RenderJob,
-  status: RenderStatus,
-  stage: string,
-  progress: number,
-  onProgress?: ProgressCallback,
-): void {
-  job.status = status;
-  job.currentStage = stage;
-  job.progress = progress;
-  if (status === "failed" || status === "complete") job.completedAt = new Date();
-  if (onProgress) onProgress(job, stage);
 }
 
 function installDebugLogger(logPath: string, log: ProducerLogger = defaultLogger): () => void {

@@ -17,11 +17,8 @@
  */
 
 import { applyFaststart, muxVideoWithAudio } from "@hyperframes/engine";
-import {
-  updateJobStatus,
-  type ProgressCallback,
-  type RenderJob,
-} from "../../renderOrchestrator.js";
+import type { ProgressCallback, RenderJob } from "../../renderOrchestrator.js";
+import { updateJobStatus } from "../shared.js";
 
 export interface AssembleStageInput {
   job: RenderJob;
