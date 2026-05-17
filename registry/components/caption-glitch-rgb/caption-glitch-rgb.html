@@ -208,7 +208,11 @@
           grp.className = "gl-group";
           grp.id = "gl-grp-" + gi;
 
-          var groupText = groupWords.map(function (w) { return w.text.toUpperCase(); }).join(" ");
+          var groupText = groupWords
+            .map(function (w) {
+              return w.text.toUpperCase();
+            })
+            .join(" ");
           var computedSize = fitFontSize(groupText, BASE_FONT, "700", "Space Grotesk", 1720);
 
           groupWords.forEach(function (w, i) {

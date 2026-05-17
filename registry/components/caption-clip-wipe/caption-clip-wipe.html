@@ -192,7 +192,11 @@
           grp.className = "wp-group";
           grp.id = "wp-grp-" + gi;
 
-          var groupText = groupWords.map(function (w) { return w.text.toUpperCase(); }).join(" ");
+          var groupText = groupWords
+            .map(function (w) {
+              return w.text.toUpperCase();
+            })
+            .join(" ");
           var computedSize = fitFontSize(groupText, 88, "800", "Poppins", 1720);
 
           groupWords.forEach(function (w, i) {

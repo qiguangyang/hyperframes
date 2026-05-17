@@ -288,8 +288,18 @@
       function buildCaptions(groups) {
         var stage = document.getElementById("caption-stage");
         groups.forEach(function (group, groupIndex) {
-          var groupText = group.words.map(function (w) { return w.text.toLowerCase(); }).join(" ");
-          var computedSize = fitFontSize(groupText, CAPTION_FONT_SIZE, "700", "Montserrat", MAX_LINE_WIDTH);
+          var groupText = group.words
+            .map(function (w) {
+              return w.text.toLowerCase();
+            })
+            .join(" ");
+          var computedSize = fitFontSize(
+            groupText,
+            CAPTION_FONT_SIZE,
+            "700",
+            "Montserrat",
+            MAX_LINE_WIDTH,
+          );
           var groupEl = document.createElement("div");
           var copyEl = document.createElement("div");
           groupEl.id = "caption-group-" + groupIndex;

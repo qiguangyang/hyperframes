@@ -391,7 +391,11 @@
 
       function makeGroup(words, groupIndex) {
         var colors = assignWordColors(words, groupIndex);
-        var groupText = words.map(function (w) { return w.text.toUpperCase(); }).join(" ");
+        var groupText = words
+          .map(function (w) {
+            return w.text.toUpperCase();
+          })
+          .join(" ");
         var fontSize = fitFontSize(groupText, BASE_FONT_SIZE, "800", "Montserrat", SAFE_ZONE_WIDTH);
         while (fontSize > MIN_FONT_SIZE && !splitLinesForGroup(words, colors, fontSize)) {
           fontSize -= 2;

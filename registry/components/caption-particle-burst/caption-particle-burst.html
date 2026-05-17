@@ -211,7 +211,11 @@
 
         GROUPS.forEach(function (g, gi) {
           var groupWords = WORDS.slice(g.wordStart, g.wordEnd + 1);
-          var groupText = groupWords.map(function (w) { return w.text.toUpperCase(); }).join(" ");
+          var groupText = groupWords
+            .map(function (w) {
+              return w.text.toUpperCase();
+            })
+            .join(" ");
           var fontSize = fitFontSize(groupText, 88, "900", "'Outfit', sans-serif", 1720);
           var grp = document.createElement("div");
           grp.className = "bs-group";

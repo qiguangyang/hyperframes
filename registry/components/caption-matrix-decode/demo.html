@@ -198,7 +198,11 @@
 
         GROUPS.forEach(function (g, gi) {
           var groupWords = WORDS.slice(g.wordStart, g.wordEnd + 1);
-          var groupText = groupWords.map(function (w) { return w.text; }).join(" ");
+          var groupText = groupWords
+            .map(function (w) {
+              return w.text;
+            })
+            .join(" ");
           var fontSize = fitFontSize(groupText, 96, "700", "'Space Grotesk', sans-serif", 1760);
           var grp = document.createElement("div");
           grp.className = "sc-group";

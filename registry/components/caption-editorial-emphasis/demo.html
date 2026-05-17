@@ -274,12 +274,22 @@
       var CLASS_MAP = { n: "word word--normal", i: "word word--italic", e: "word word--emphasis" };
 
       function computeLineSize(linePairs) {
-        var hasEmphasis = linePairs.some(function (p) { return p[1] === "e"; });
+        var hasEmphasis = linePairs.some(function (p) {
+          return p[1] === "e";
+        });
         if (hasEmphasis) {
-          var lineText = linePairs.map(function (p) { return W[p[0]].text; }).join(" ");
+          var lineText = linePairs
+            .map(function (p) {
+              return W[p[0]].text;
+            })
+            .join(" ");
           return fitFontSize(lineText, 180, "800", "Playfair Display", SAFE_WIDTH);
         }
-        var lineText = linePairs.map(function (p) { return W[p[0]].text; }).join(" ");
+        var lineText = linePairs
+          .map(function (p) {
+            return W[p[0]].text;
+          })
+          .join(" ");
         return fitFontSize(lineText, 86, "400", "Inter", SAFE_WIDTH);
       }
 

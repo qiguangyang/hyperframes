@@ -395,8 +395,18 @@
       function buildCaptions(groups) {
         var stage = document.getElementById("caption-stage");
         groups.forEach(function (group, groupIndex) {
-          var groupText = group.words.map(function (w) { return w.text.toUpperCase(); }).join(" ");
-          var computedSize = fitFontSize(groupText, CAPTION_FONT_SIZE, "900", "Gabarito", SAFE_ZONE_WIDTH);
+          var groupText = group.words
+            .map(function (w) {
+              return w.text.toUpperCase();
+            })
+            .join(" ");
+          var computedSize = fitFontSize(
+            groupText,
+            CAPTION_FONT_SIZE,
+            "900",
+            "Gabarito",
+            SAFE_ZONE_WIDTH,
+          );
           var groupEl = document.createElement("div");
           groupEl.id = "caption-group-" + groupIndex;
           groupEl.className = "caption-group";

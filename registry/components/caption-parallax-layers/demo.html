@@ -247,7 +247,11 @@
         bEl.className = "caption-block";
         bEl.id = "bb" + bi;
         if (block.behind) {
-          var behindText = block.behind.map(function (wi_arr) { return W[wi_arr[0]].text; }).join(" ");
+          var behindText = block.behind
+            .map(function (wi_arr) {
+              return W[wi_arr[0]].text;
+            })
+            .join(" ");
           var behindSize = fitFontSize(behindText, 220, "400", "Instrument Serif", BEHIND_WIDTH);
           var bLine = document.createElement("div");
           bLine.className = "caption-line caption-line--behind";
@@ -267,7 +271,11 @@
         fEl.className = "caption-block";
         fEl.id = "fb" + bi;
         if (block.front) {
-          var frontText = block.front.map(function (wi_arr) { return W[wi_arr[0]].text; }).join(" ");
+          var frontText = block.front
+            .map(function (wi_arr) {
+              return W[wi_arr[0]].text;
+            })
+            .join(" ");
           var frontSize = fitFontSize(frontText, 130, "400", "Instrument Serif", FRONT_WIDTH);
           var fLine = document.createElement("div");
           fLine.className = "caption-line";

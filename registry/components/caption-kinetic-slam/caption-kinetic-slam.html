@@ -158,7 +158,8 @@
           el.className = "kt-word";
           el.id = "kt-w-" + wi;
           el.textContent = w.text.toUpperCase();
-          el.style.fontSize = fitFontSize(w.text.toUpperCase(), 220, "400", "'Anton', sans-serif", 1720) + "px";
+          el.style.fontSize =
+            fitFontSize(w.text.toUpperCase(), 220, "400", "'Anton', sans-serif", 1720) + "px";
           if (KEYWORDS.has(wi)) el.style.color = "#FFD700";
           container.appendChild(el);
 
