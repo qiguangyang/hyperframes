@@ -357,7 +357,13 @@ export function useTimelinePlayer() {
         pendingSeekRef.current = Math.max(0, time);
         return false;
       }
-      const duration = Math.max(0, adapter.getDuration());
+      const adapterDur = adapter.getDuration();
+      const state = usePlayerStore.getState();
+      const maxEnd =
+        state.elements.length > 0
+          ? Math.max(...state.elements.map((el) => el.start + el.duration))
+          : 0;
+      const duration = Math.max(0, adapterDur, maxEnd);
       const nextTime = Math.max(0, duration > 0 ? Math.min(duration, time) : time);
       adapter.seek(nextTime, options);
       liveTime.notify(nextTime); // Direct DOM updates (playhead, timecode, progress) — no re-render
