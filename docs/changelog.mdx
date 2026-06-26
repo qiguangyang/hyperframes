@@ -9,6 +9,22 @@ Recent HyperFrames releases, including user-facing features, fixes, and migratio
 {/* New release entries are prepended by `bun run changelog:draft <version> --write`. */}
 
 <Update
+  label="HyperFrames v0.7.13"
+  description="Released - 2026-06-26"
+  tags={["Release", "Lint"]}
+>
+This lint reliability release catches malformed generated HTML that leaves CSS
+or code-looking text between the document head and the composition root, where a
+browser would render it as visible video text.
+
+## Fixes
+
+- **Lint:** Catch visible css before composition root ([c7830b54](https://github.com/heygen-com/hyperframes/commit/c7830b54c617f1435a97575b9a7eaa104594c835), [#1751](https://github.com/heygen-com/hyperframes/pull/1751))
+
+[View the full commit range](https://github.com/heygen-com/hyperframes/compare/v0.7.12...v0.7.13).
+</Update>
+
+<Update
   label="HyperFrames v0.7.12"
   description="Released - 2026-06-26"
   tags={["Release", "Lint", "CLI", "Skills"]}
